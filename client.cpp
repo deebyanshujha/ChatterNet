@@ -39,9 +39,14 @@ int main() {
         sizeof(serverAddress)
     );
 
-    if(result == 0)
+    if(result == SOCKET_ERROR){
+        cout << "Connection failed\n";
+        cout << "Error code: "<< WSAGetLastError()<< endl;
+        return 1;
+    }else{
         cout << "Connection was successful\n";
-
+    }
+        
     // Start listening thread
     startListeningAndPrintMessagesOnNewThread(socketFD);
 
@@ -62,42 +67,36 @@ int main() {
 #include <sstream>
 
 void readConsoleEntriesAndSendToServer(SOCKET socketFD) {
-
     string name;
-
     cout << "Please enter your name:\n";
     getline(cin, name);
-
+    send(
+        socketFD,
+        name.c_str(),
+        name.length(),
+        0
+    );
     cout << "Type messages (type exit to quit)\n";
-
     while(true){
-
         string line;
         getline(cin, line);
-
         if(line == "exit")
             break;
-
         // Get current time
         time_t now = time(0);
         tm* localTime = localtime(&now);
-
         // Format time
         stringstream timeStream;
-
         timeStream << setfill('0')
                    << setw(2) << localTime->tm_hour //setw --> set width
                    << ":"
                    << setw(2) << localTime->tm_min;
-
         string currentTime = timeStream.str();
-
         // Final message
         string message =
             "[" + currentTime + "] "
             + name + ": "
             + line;
-
         send(
             socketFD,
             message.c_str(),
@@ -121,9 +120,14 @@ void listenAndPrint(SOCKET socketFD) {
             1024,
             0
         );
+        if(amountReceived == SOCKET_ERROR){
+            cout << "recv failed\n";
+            cout << "Error code: "<< WSAGetLastError()<<endl;
+            break;
+        }
         if(amountReceived > 0){
             buffer[amountReceived] = '\0';
-            cout << "Response was: " << buffer << endl;
+            cout << buffer << endl;
         }if(amountReceived == 0)
             break;
     }
