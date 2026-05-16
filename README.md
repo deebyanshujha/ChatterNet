@@ -45,14 +45,14 @@ cl client.cpp ws2_32.lib
 1. Start the server first:
 
    ```bash
-   ./server
+   .\server.exe
    ```
 
    You should see `Server listening on port 2000`.
 
 2. Start one or more clients in different terminal windows:
    ```bash
-   ./client
+   .\client.exe
    ```
 3. Enter a username and start chatting! Type `exit` to close the client.
 
