@@ -80,8 +80,12 @@ void readConsoleEntriesAndSendToServer(SOCKET socketFD) {
     while(true){
         string line;
         getline(cin, line);
-        if(line == "exit")
+        if(line == "exit"){
+            shutdown(socketFD, SD_SEND);
+            char drainBuffer[1024];
+            while(recv(socketFD, drainBuffer, 1024, 0) > 0);
             break;
+        }
         // Get current time
         time_t now = time(0);
         tm* localTime = localtime(&now);
@@ -121,8 +125,6 @@ void listenAndPrint(SOCKET socketFD) {
             0
         );
         if(amountReceived == SOCKET_ERROR){
-            cout << "recv failed\n";
-            cout << "Error code: "<< WSAGetLastError()<<endl;
             break;
         }
         if(amountReceived > 0){
