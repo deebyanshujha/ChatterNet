@@ -129,7 +129,7 @@ void listenAndPrint(SOCKET socketFD) {
         }
         if(amountReceived > 0){
             buffer[amountReceived] = '\0';
-            cout << buffer << endl;
+            cout << "---> "<<buffer << endl;
         }if(amountReceived == 0)
             break;
     }
